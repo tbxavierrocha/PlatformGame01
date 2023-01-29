@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce = 5f;
     [SerializeField] Transform groundCheck;
     [SerializeField] LayerMask Ground;
+    [SerializeField] Transform cam;
     //[SerializeField] AudioSource jumpSound;
 
     
@@ -23,8 +24,22 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
+
+        //Camera dir
+        Vector3 camForward = cam.forward;
+        Vector3 camRight = cam.right;
+
+        camForward.y = 0;
+        camRight.y = 0;
+
+        //Creating relate cam direction
+        Vector3 forwardRelative = verticalInput * camForward;
+        Vector3 rightRelative = horizontalInput * camRight;
+
+        Vector3 moveDir = forwardRelative + rightRelative;
         
-        rb.velocity = new Vector3(horizontalInput * movementSpeed, rb.velocity.y, verticalInput * movementSpeed);
+        //Movement
+        rb.velocity = new Vector3(moveDir.x * movementSpeed, rb.velocity.y, moveDir.z * movementSpeed);
 
         if (Input.GetButtonDown("Jump") && IsGrounded()) 
         {
@@ -41,7 +56,7 @@ public class PlayerController : MonoBehaviour
 
     bool IsGrounded()
     {
-        return Physics.CheckSphere(groundCheck.position, .1f, Ground);
+        return Physics.CheckSphere(groundCheck.position, .5f, Ground);
     }
     
 }
